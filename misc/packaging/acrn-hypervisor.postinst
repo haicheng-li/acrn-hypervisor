@@ -9,7 +9,7 @@ set -e
 
 SCENARIO=(shared)
 
-BOARD=(nuc11tnbi5)
+BOARD=(qemu)
 
 #Build info End
 

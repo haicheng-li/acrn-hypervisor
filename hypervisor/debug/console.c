@@ -31,6 +31,7 @@ static void parse_hvdbg_cmdline(void)
 	const char *end = NULL;
 	struct acrn_boot_info *abi = get_acrn_boot_info();
 
+	//return;
 	start = abi->cmdline;
 
 	while ((*start) != '\0') {

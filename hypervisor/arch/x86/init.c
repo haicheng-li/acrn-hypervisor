@@ -34,6 +34,7 @@ extern uint32_t boot_regs[2];
 /*TODO: move into debug module */
 static void init_debug_pre(void)
 {
+	//return;
 	/* Initialize console */
 	console_init();
 
@@ -56,7 +57,7 @@ static void init_debug_post(uint16_t pcpu_id)
 /*TODO: move into guest-vcpu module */
 static void init_guest_mode(uint16_t pcpu_id)
 {
-	vmx_on();
+	//vmx_on();
 
 	launch_vms(pcpu_id);
 }
@@ -77,7 +78,7 @@ static void init_misc(void)
 {
 	init_cr0_cr4_flexible_bits();
 	if (!sanitize_cr0_cr4_pattern()) {
-		panic("%s Sanitize pattern of CR0 or CR4 failed.\n", __func__);
+	//	panic("%s Sanitize pattern of CR0 or CR4 failed.\n", __func__);
 	}
 }
 
@@ -96,7 +97,7 @@ void init_primary_pcpu(void)
 	init_debug_pre();
 
 	if (sanitize_acrn_boot_info(get_acrn_boot_info()) != 0) {
-		panic("Sanitize boot info failed!");
+//		panic("Sanitize boot info failed!");
 	}
 
 	init_pcpu_pre(true);

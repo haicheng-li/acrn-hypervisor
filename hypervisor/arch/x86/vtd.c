@@ -1253,6 +1253,7 @@ int32_t init_iommu(void)
 {
 	int32_t ret = 0;
 
+	return ret;
 	platform_dmar_info = get_dmar_info();
 
 	if ((platform_dmar_info == NULL) || (platform_dmar_info->drhd_count == 0U)) {

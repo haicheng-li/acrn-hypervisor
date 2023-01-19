@@ -149,7 +149,7 @@ void init_pcpu_pre(bool is_bsp)
 		init_pcpu_capabilities();
 
 		if (detect_hardware_support() != 0) {
-			panic("hardware not support!");
+//			panic("hardware not support!");
 		}
 
 		init_pcpu_model_name();
@@ -176,7 +176,7 @@ void init_pcpu_pre(bool is_bsp)
 #ifdef CONFIG_ACPI_PARSE_ENABLED
 		ret = acpi_fixup();
 		if (ret != 0) {
-			panic("failed to parse/fix up ACPI table!");
+		//	panic("failed to parse/fix up ACPI table!");
 		}
 #endif
 
@@ -295,7 +295,7 @@ void init_pcpu_post(uint16_t pcpu_id)
 		/* Start all secondary cores */
 		startup_paddr = prepare_trampoline();
 		if (!start_pcpus(AP_MASK)) {
-			panic("Failed to start all secondary cores!");
+//			panic("Failed to start all secondary cores!");
 		}
 
 		ASSERT(get_pcpu_id() == BSP_CPU_ID, "");
@@ -329,7 +329,7 @@ void init_pcpu_post(uint16_t pcpu_id)
 
 	bitmap_clear_lock(pcpu_id, &pcpu_sync);
 	/* Waiting for each pCPU has done its initialization before to continue */
-	wait_sync_change(&pcpu_sync, 0UL);
+	//wait_sync_change(&pcpu_sync, 0UL);
 }
 
 static uint16_t get_pcpu_id_from_lapic_id(uint32_t lapic_id)
