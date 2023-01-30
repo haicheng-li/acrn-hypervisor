@@ -60,8 +60,12 @@ CFLAGS += -Wall -W
 CFLAGS += -ffunction-sections -fdata-sections
 CFLAGS += -fshort-wchar -ffreestanding
 CFLAGS += -fsigned-char
+
+ifeq (x86, $(ARCH))
 CFLAGS += -m64 -mno-mmx -mno-sse -mno-sse2 -mno-80387 -mno-fp-ret-in-387
 CFLAGS += -mno-red-zone -mpopcnt
+endif
+
 CFLAGS += -nostdinc -nostdlib -fno-common
 CFLAGS += -Werror
 
@@ -146,8 +150,8 @@ REL_INCLUDE_PATH += boot/include/guest
 
 # TODO: ARCH name should come from generated config.mk.
 # Fixed to x86 for now.
-ARCH := x86
-#ARCH := riscv
+#ARCH := x86
+ARCH := riscv
 REL_INCLUDE_PATH += include/arch/$(ARCH)
 
 INCLUDE_PATH := $(realpath $(REL_INCLUDE_PATH))
@@ -156,7 +160,7 @@ INCLUDE_PATH += $(BOARD_INFO_DIR)
 INCLUDE_PATH += $(BOARD_CFG_DIR)
 INCLUDE_PATH += $(SCENARIO_CFG_DIR)
 
-#UTILS=riscv64-linux-gnu-
+UTILS=riscv64-linux-gnu-
 #UTILS=riscv-none-elf-
 CC = $(UTILS)gcc
 AS = $(UTILS)as

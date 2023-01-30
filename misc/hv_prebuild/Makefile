@@ -34,6 +34,7 @@ endif
 PRE_BUILD_CFLAGS += -fno-stack-protector -fno-builtin -W -Wall
 PRE_BUILD_INCLUDE := $(patsubst %, -I %, $(INCLUDE_PATH)) -include $(HV_CONFIG_H) -I .
 
+x86_CC = gcc
 .PHONY: default
 default: $(PRE_BUILD_SRCS)
 	@echo "SCENARIO <$(SCENARIO)> for BOARD <$(BOARD)> is specified."
@@ -52,4 +53,4 @@ default: $(PRE_BUILD_SRCS)
 	else \
 		echo "Found $(BOARD) configuration for SCENARIO $(SCENARIO) under $(BOARD_CFG_DIR)"; \
 	fi;
-	$(CC) $(PRE_BUILD_SRCS) $(PRE_BUILD_INCLUDE) $(PRE_BUILD_CFLAGS) -o $(HV_OBJDIR)/hv_prebuild_check.out
+	$(x86_CC) $(PRE_BUILD_SRCS) $(PRE_BUILD_INCLUDE) $(PRE_BUILD_CFLAGS) -o $(HV_OBJDIR)/hv_prebuild_check.out
