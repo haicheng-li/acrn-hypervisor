@@ -9,7 +9,7 @@ GCC_MAJOR=$(shell echo __GNUC__ | $(CC) -E -x c - | tail -n 1)
 GCC_MINOR=$(shell echo __GNUC_MINOR__ | $(CC) -E -x c - | tail -n 1)
 
 #enable stack overflow check
-STACK_PROTECTOR := 1
+#STACK_PROTECTOR := 1
 
 ASL_COMPILER ?= $(shell which iasl)
 IASL_MIN_VER ?= "20190703"
@@ -147,6 +147,7 @@ REL_INCLUDE_PATH += boot/include/guest
 # TODO: ARCH name should come from generated config.mk.
 # Fixed to x86 for now.
 ARCH := x86
+#ARCH := riscv
 REL_INCLUDE_PATH += include/arch/$(ARCH)
 
 INCLUDE_PATH := $(realpath $(REL_INCLUDE_PATH))
@@ -155,11 +156,13 @@ INCLUDE_PATH += $(BOARD_INFO_DIR)
 INCLUDE_PATH += $(BOARD_CFG_DIR)
 INCLUDE_PATH += $(SCENARIO_CFG_DIR)
 
-CC ?= gcc
-AS ?= as
-AR ?= ar
-LD ?= ld
-OBJCOPY ?= objcopy
+#UTILS=riscv64-linux-gnu-
+#UTILS=riscv-none-elf-
+CC = $(UTILS)gcc
+AS = $(UTILS)as
+AR = $(UTILS)ar
+LD = $(UTILS)ld
+OBJCOPY = $(UTILS)objcopy
 
 export CC AS AR LD OBJCOPY
 export CFLAGS ASFLAGS ARFLAGS LDFLAGS ARCH_CFLAGS ARCH_ASFLAGS ARCH_ARFLAGS ARCH_LDFLAGS
@@ -174,62 +177,62 @@ LIB_C_SRCS += lib/crypto/mbedtls/sha256.c
 LIB_C_SRCS += lib/crypto/mbedtls/md.c
 LIB_C_SRCS += lib/crypto/mbedtls/md_wrap.c
 LIB_C_SRCS += lib/sprintf.c
-LIB_C_SRCS += arch/x86/lib/memory.c
+LIB_C_SRCS += arch/$(ARCH)/lib/memory.c
 ifdef STACK_PROTECTOR
 LIB_C_SRCS += lib/stack_protector.c
 endif
 # retpoline support
-ifeq (true, $(shell [ $(GCC_MAJOR) -eq 7 ] && [ $(GCC_MINOR) -ge 3 ] && echo true))
-CFLAGS += -mindirect-branch=thunk-extern -mindirect-branch-register
-CFLAGS += -DCONFIG_RETPOLINE
-LIB_S_SRCS += arch/x86/lib/retpoline-thunk.S
-else
-ifeq (true, $(shell [ $(GCC_MAJOR) -ge 8 ] && echo true))
-CFLAGS += -mindirect-branch=thunk-extern -mindirect-branch-register
-CFLAGS += -DCONFIG_RETPOLINE
-LIB_S_SRCS += arch/x86/lib/retpoline-thunk.S
-endif
-endif
+#ifeq (true, $(shell [ $(GCC_MAJOR) -eq 7 ] && [ $(GCC_MINOR) -ge 3 ] && echo true))
+#CFLAGS += -mindirect-branch=thunk-extern -mindirect-branch-register
+#CFLAGS += -DCONFIG_RETPOLINE
+#LIB_S_SRCS += arch/$(ARCH)/lib/retpoline-thunk.S
+#else
+#ifeq (true, $(shell [ $(GCC_MAJOR) -ge 8 ] && echo true))
+##CFLAGS += -mindirect-branch=thunk-extern -mindirect-branch-register
+#CFLAGS += -DCONFIG_RETPOLINE
+#LIB_S_SRCS += arch/$(ARCH)/lib/retpoline-thunk.S
+#endif
+#endif
 
 # platform boot component
-BOOT_S_SRCS += arch/x86/boot/cpu_primary.S
-BOOT_S_SRCS += arch/x86/boot/trampoline.S
+BOOT_S_SRCS += arch/$(ARCH)/boot/cpu_primary.S
+BOOT_S_SRCS += arch/$(ARCH)/boot/trampoline.S
 BOOT_C_SRCS += boot/boot.c
 BOOT_C_SRCS += boot/multiboot/multiboot.c
 ifeq ($(CONFIG_MULTIBOOT2),y)
 BOOT_C_SRCS += boot/multiboot/multiboot2.c
 endif
 BOOT_C_SRCS += boot/reloc.c
-BOOT_C_SRCS += arch/x86/rtcm.c
+BOOT_C_SRCS += arch/$(ARCH)/rtcm.c
 
 # hardware management component
-HW_S_SRCS += arch/x86/idt.S
-HW_C_SRCS += arch/x86/ioapic.c
-HW_C_SRCS += arch/x86/lapic.c
-HW_C_SRCS += arch/x86/cpu.c
-HW_C_SRCS += arch/x86/cpu_caps.c
-HW_C_SRCS += arch/x86/platform_caps.c
-HW_C_SRCS += arch/x86/security.c
-HW_C_SRCS += arch/x86/mmu.c
-HW_C_SRCS += arch/x86/e820.c
-HW_C_SRCS += arch/x86/pagetable.c
-HW_C_SRCS += arch/x86/page.c
-HW_C_SRCS += arch/x86/notify.c
-HW_C_SRCS += arch/x86/vtd.c
-HW_C_SRCS += arch/x86/gdt.c
-HW_C_SRCS += arch/x86/nmi.c
-HW_C_SRCS += arch/x86/exception.c
-HW_C_SRCS += arch/x86/irq.c
-HW_C_SRCS += arch/x86/tsc.c
-HW_C_SRCS += arch/x86/tsc_deadline_timer.c
-HW_C_SRCS += arch/x86/vmx.c
-HW_C_SRCS += arch/x86/cpu_state_tbl.c
-HW_C_SRCS += arch/x86/pm.c
-HW_S_SRCS += arch/x86/wakeup.S
-HW_C_SRCS += arch/x86/trampoline.c
-HW_S_SRCS += arch/x86/sched.S
-HW_C_SRCS += arch/x86/rdt.c
-HW_C_SRCS += arch/x86/sgx.c
+HW_S_SRCS += arch/$(ARCH)/idt.S
+HW_C_SRCS += arch/$(ARCH)/ioapic.c
+HW_C_SRCS += arch/$(ARCH)/lapic.c
+HW_C_SRCS += arch/$(ARCH)/cpu.c
+HW_C_SRCS += arch/$(ARCH)/cpu_caps.c
+HW_C_SRCS += arch/$(ARCH)/platform_caps.c
+HW_C_SRCS += arch/$(ARCH)/security.c
+HW_C_SRCS += arch/$(ARCH)/mmu.c
+HW_C_SRCS += arch/$(ARCH)/e820.c
+HW_C_SRCS += arch/$(ARCH)/pagetable.c
+HW_C_SRCS += arch/$(ARCH)/page.c
+HW_C_SRCS += arch/$(ARCH)/notify.c
+HW_C_SRCS += arch/$(ARCH)/vtd.c
+HW_C_SRCS += arch/$(ARCH)/gdt.c
+HW_C_SRCS += arch/$(ARCH)/nmi.c
+HW_C_SRCS += arch/$(ARCH)/exception.c
+HW_C_SRCS += arch/$(ARCH)/irq.c
+HW_C_SRCS += arch/$(ARCH)/tsc.c
+HW_C_SRCS += arch/$(ARCH)/tsc_deadline_timer.c
+HW_C_SRCS += arch/$(ARCH)/vmx.c
+HW_C_SRCS += arch/$(ARCH)/cpu_state_tbl.c
+HW_C_SRCS += arch/$(ARCH)/pm.c
+HW_S_SRCS += arch/$(ARCH)/wakeup.S
+HW_C_SRCS += arch/$(ARCH)/trampoline.c
+HW_S_SRCS += arch/$(ARCH)/sched.S
+HW_C_SRCS += arch/$(ARCH)/rdt.c
+HW_C_SRCS += arch/$(ARCH)/sgx.c
 HW_C_SRCS += common/ticks.c
 HW_C_SRCS += common/delay.c
 HW_C_SRCS += common/timer.c
@@ -251,7 +254,7 @@ ifeq ($(CONFIG_SCHED_PRIO),y)
 HW_C_SRCS += common/sched_prio.c
 endif
 HW_C_SRCS += hw/pci.c
-HW_C_SRCS += arch/x86/configs/vm_config.c
+HW_C_SRCS += arch/$(ARCH)/configs/vm_config.c
 HW_C_SRCS += boot/acpi_base.c
 # ACPI parsing component
 # This part should be isolated from FuSa Cert
@@ -267,26 +270,26 @@ VM_CFG_C_SRCS += $(BOARD_CFG_DIR)/pt_intx.c
 VM_CFG_C_SRCS += $(BOARD_CFG_DIR)/pci_dev.c
 
 # virtual platform base component
-VP_BASE_C_SRCS += arch/x86/guest/vcpuid.c
-VP_BASE_C_SRCS += arch/x86/guest/vcpu.c
-VP_BASE_C_SRCS += arch/x86/guest/vm.c
-VP_BASE_C_SRCS += arch/x86/guest/vmtrr.c
-VP_BASE_C_SRCS += arch/x86/guest/guest_memory.c
-VP_BASE_C_SRCS += arch/x86/guest/vmsr.c
-VP_BASE_S_SRCS += arch/x86/guest/vmx_asm.S
-VP_BASE_C_SRCS += arch/x86/guest/vmcs.c
-VP_BASE_C_SRCS += arch/x86/guest/virq.c
-VP_BASE_C_SRCS += arch/x86/guest/virtual_cr.c
-VP_BASE_C_SRCS += arch/x86/guest/vmexit.c
-VP_BASE_C_SRCS += arch/x86/guest/ept.c
-VP_BASE_C_SRCS += arch/x86/guest/ve820.c
-VP_BASE_C_SRCS += arch/x86/guest/ucode.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/vcpuid.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/vcpu.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/vm.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/vmtrr.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/guest_memory.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/vmsr.c
+VP_BASE_S_SRCS += arch/$(ARCH)/guest/vmx_asm.S
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/vmcs.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/virq.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/virtual_cr.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/vmexit.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/ept.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/ve820.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/ucode.c
 ifeq ($(CONFIG_HYPERV_ENABLED),y)
-VP_BASE_C_SRCS += arch/x86/guest/hyperv.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/hyperv.c
 endif
 ifeq ($(CONFIG_NVMX_ENABLED),y)
-VP_BASE_C_SRCS += arch/x86/guest/nested.c
-VP_BASE_C_SRCS += arch/x86/guest/vept.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/nested.c
+VP_BASE_C_SRCS += arch/$(ARCH)/guest/vept.c
 endif
 VP_BASE_C_SRCS += boot/guest/vboot_info.c
 ifeq ($(CONFIG_GUEST_KERNEL_BZIMAGE),y)
@@ -300,8 +303,8 @@ VP_BASE_C_SRCS += boot/guest/elf_loader.c
 endif
 VP_BASE_C_SRCS += common/hv_main.c
 VP_BASE_C_SRCS += common/vm_load.c
-VP_BASE_C_SRCS += arch/x86/configs/pci_dev.c
-VP_BASE_C_SRCS += arch/x86/configs/vacpi.c
+VP_BASE_C_SRCS += arch/$(ARCH)/configs/pci_dev.c
+VP_BASE_C_SRCS += arch/$(ARCH)/configs/vacpi.c
 ifeq ($(CONFIG_SECURITY_VM_FIXUP),y)
 VP_BASE_C_SRCS += quirks/security_vm_fixup.c
 endif
@@ -326,34 +329,34 @@ VP_DM_C_SRCS += dm/vpci/vsriov.c
 VP_DM_C_SRCS += dm/vpci/vmcs9900.c
 VP_DM_C_SRCS += dm/mmio_dev.c
 VP_DM_C_SRCS += dm/vgpio.c
-VP_DM_C_SRCS += arch/x86/guest/vlapic.c
-VP_DM_C_SRCS += arch/x86/guest/pm.c
-VP_DM_C_SRCS += arch/x86/guest/assign.c
-VP_DM_C_SRCS += arch/x86/guest/vmx_io.c
-VP_DM_C_SRCS += arch/x86/guest/instr_emul.c
-VP_DM_C_SRCS += arch/x86/guest/lock_instr_emul.c
-VP_DM_C_SRCS += arch/x86/guest/vm_reset.c
+VP_DM_C_SRCS += arch/$(ARCH)/guest/vlapic.c
+VP_DM_C_SRCS += arch/$(ARCH)/guest/pm.c
+VP_DM_C_SRCS += arch/$(ARCH)/guest/assign.c
+VP_DM_C_SRCS += arch/$(ARCH)/guest/vmx_io.c
+VP_DM_C_SRCS += arch/$(ARCH)/guest/instr_emul.c
+VP_DM_C_SRCS += arch/$(ARCH)/guest/lock_instr_emul.c
+VP_DM_C_SRCS += arch/$(ARCH)/guest/vm_reset.c
 ifeq ($(CONFIG_VCAT_ENABLED),y)
-VP_DM_C_SRCS += arch/x86/guest/vcat.c
+VP_DM_C_SRCS += arch/$(ARCH)/guest/vcat.c
 endif
 VP_DM_C_SRCS += common/ptdev.c
 
 # virtual platform trusty
-VP_TRUSTY_C_SRCS += arch/x86/guest/trusty.c
+VP_TRUSTY_C_SRCS += arch/$(ARCH)/guest/trusty.c
 VP_TRUSTY_C_SRCS += common/trusty_hypercall.c
-VP_TRUSTY_C_SRCS += arch/x86/seed/seed.c
-VP_TRUSTY_C_SRCS += arch/x86/seed/seed_abl.c
-VP_TRUSTY_C_SRCS += arch/x86/seed/seed_sbl.c
+VP_TRUSTY_C_SRCS += arch/$(ARCH)/seed/seed.c
+VP_TRUSTY_C_SRCS += arch/$(ARCH)/seed/seed_abl.c
+VP_TRUSTY_C_SRCS += arch/$(ARCH)/seed/seed_sbl.c
 
 # x86 tee support
-VP_X86_TEE_C_SRCS += arch/x86/guest/optee.c
+VP_X86_TEE_C_SRCS += arch/$(ARCH)/guest/optee.c
 
 # virtual platform hypercall
-VP_HCALL_C_SRCS += arch/x86/guest/vmcall.c
+VP_HCALL_C_SRCS += arch/$(ARCH)/guest/vmcall.c
 VP_HCALL_C_SRCS += common/hypercall.c
 
 # system initialization
-SYS_INIT_C_SRCS += arch/x86/init.c
+SYS_INIT_C_SRCS += arch/$(ARCH)/init.c
 
 LIB_C_OBJS := $(patsubst %.c,$(HV_OBJDIR)/%.o,$(LIB_C_SRCS))
 LIB_S_OBJS := $(patsubst %.S,$(HV_OBJDIR)/%.o,$(LIB_S_SRCS))
