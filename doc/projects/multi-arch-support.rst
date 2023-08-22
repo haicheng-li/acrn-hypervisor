@@ -31,6 +31,8 @@ Once this support is implemented and has sufficient quality, this port will
 become a part of the upstream ACRN project and we'll continue development there
 and encourage contributions by the ACRN community.
 
+For latest status, pls. refer to https://github.com/intel/acrn-riscv.
+
 License
 =======
 
